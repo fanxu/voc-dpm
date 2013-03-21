@@ -43,6 +43,13 @@ else
     use_resize = false;
 end
 
+if isfield(conf.eval, 'use_cascade')
+    use_cascade = conf.eval.use_cascade;
+    csc_model = cascade_model(model, model.year, 5, model.thresh);
+else
+    use_cascade = false;
+end
+
 ids = textread(sprintf(VOCopts.imgsetpath, testset), '%s');
 
 % run detector in each image
@@ -74,7 +81,17 @@ catch
       im = imresize(im, scale);
       scale = 1 / scale;
     end
-    [ds, bs] = imgdetect(im, model, model.thresh);
+    try
+        if use_cascade
+          pyra = featpyramid(double(im), csc_model);
+          [ds, bs] = cascade_detect(pyra, csc_model, csc_model.thresh);
+        else
+          [ds, bs] = imgdetect(im, model, model.thresh);
+        end
+    catch me
+        ds = [];
+        bs = [];
+    end
     if ~isempty(bs)
       unclipped_ds = ds(:,1:4);
       [ds, bs, rm] = clipboxes(im, ds, bs);
