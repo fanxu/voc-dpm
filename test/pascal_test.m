@@ -36,6 +36,13 @@ VOCopts  = conf.pascal.VOCopts;
 cachedir = conf.paths.model_dir;
 cls = model.class;
 
+if isfield(conf.eval, 'use_resize') && isfield(conf.eval, 'resize_longside')
+    use_resize = conf.eval.use_resize;
+    resize_longside = conf.eval.resize_longside;
+else
+    use_resize = false;
+end
+
 ids = textread(sprintf(VOCopts.imgsetpath, testset), '%s');
 
 % run detector in each image
@@ -60,6 +67,13 @@ catch
     else
       im = imread(sprintf(opts.imgpath, ids{i}));  
     end
+    if use_resize
+      im_orig = im;
+      [h_orig, w_orig, ~] = size(im_orig);
+      scale = resize_longside / max(h_orig, w_orig);
+      im = imresize(im, scale);
+      scale = 1 / scale;
+    end
     [ds, bs] = imgdetect(im, model, model.thresh);
     if ~isempty(bs)
       unclipped_ds = ds(:,1:4);
@@ -71,7 +85,12 @@ catch
       ds = ds(I,:);
       bs = bs(I,:);
       unclipped_ds = unclipped_ds(I,:);
-
+      
+      if use_resize
+        [ds, bs] = scaleboxes(ds, bs, scale);
+        unclipped_ds = ds(:,1:4);
+      end
+      
       % Save detection windows in boxes
       ds_out{i} = ds(:,[1:4 end]);
 
