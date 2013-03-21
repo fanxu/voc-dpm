@@ -60,7 +60,7 @@ catch
       dataid = dataid + 1;
       bbox   = rec.objects(j).bbox;
       
-      pos(numpos).im      = [VOCopts.datadir rec.imgname];
+      pos(numpos).im      = fullfile(VOCopts.datadir, VOCopts.dataset, 'JPEGImages', rec.filename);
       pos(numpos).x1      = bbox(1);
       pos(numpos).y1      = bbox(2);
       pos(numpos).x2      = bbox(3);
@@ -79,7 +79,7 @@ catch
       bbox(1) = rec.imgsize(1) - oldx2 + 1;
       bbox(3) = rec.imgsize(1) - oldx1 + 1;
 
-      pos(numpos).im      = [VOCopts.datadir rec.imgname];
+      pos(numpos).im      = fullfile(VOCopts.datadir, VOCopts.dataset, 'JPEGImages', rec.filename);
       pos(numpos).x1      = bbox(1);
       pos(numpos).y1      = bbox(2);
       pos(numpos).x2      = bbox(3);
@@ -93,7 +93,7 @@ catch
 
     % Create one entry per foreground image in the impos array
     numimpos                = numimpos + 1;
-    impos(numimpos).im      = [VOCopts.datadir rec.imgname];
+    impos(numimpos).im      = fullfile(VOCopts.datadir, VOCopts.dataset, 'JPEGImages', rec.filename);
     impos(numimpos).boxes   = zeros(count, 4);
     impos(numimpos).dataids = zeros(count, 1);
     impos(numimpos).sizes   = zeros(count, 1);
@@ -110,7 +110,7 @@ catch
 
     % Create flipped example
     numimpos                = numimpos + 1;
-    impos(numimpos).im      = [VOCopts.datadir rec.imgname];
+    impos(numimpos).im      = fullfile(VOCopts.datadir, VOCopts.dataset, 'JPEGImages', rec.filename);
     impos(numimpos).boxes   = zeros(count, 4);
     impos(numimpos).dataids = zeros(count, 1);
     impos(numimpos).sizes   = zeros(count, 1);
@@ -143,7 +143,7 @@ catch
     if length(clsinds) == 0
       dataid             = dataid + 1;
       numneg             = numneg+1;
-      neg(numneg).im     = [VOCopts.datadir rec.imgname];
+      neg(numneg).im     = fullfile(VOCopts.datadir, VOCopts.dataset, 'JPEGImages', rec.filename);
       neg(numneg).flip   = false;
       neg(numneg).dataid = dataid;
     end
